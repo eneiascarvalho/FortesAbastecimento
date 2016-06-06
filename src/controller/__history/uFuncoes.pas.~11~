@@ -1,0 +1,22 @@
+unit uFuncoes;
+
+interface
+
+uses SqlExpr, uDmData;
+
+function GenID(Generator : string) : integer;
+
+implementation
+
+function GenID(Generator : string) : integer;
+  var
+    qry : TSQLQuery;
+begin
+  try
+    qry
+  finally
+
+  end;
+end;
+
+end.

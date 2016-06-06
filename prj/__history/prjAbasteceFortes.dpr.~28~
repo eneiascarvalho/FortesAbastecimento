@@ -1,0 +1,29 @@
+program prjAbasteceFortes;
+
+uses
+  Forms,
+  uFrmPrincipal in '..\src\view\uFrmPrincipal.pas' {frmPrincipal},
+  uDmData in '..\src\controller\uDmData.pas' {dmData: TDataModule},
+  uTanqueModel in '..\src\model\uTanqueModel.pas',
+  uBombaModel in '..\src\model\uBombaModel.pas',
+  uAbastecimentoModel in '..\src\model\uAbastecimentoModel.pas',
+  uFrmBase in '..\src\model\uFrmBase.pas' {frmBase},
+  uTanqueController in '..\src\controller\uTanqueController.pas',
+  uBombaController in '..\src\controller\uBombaController.pas',
+  uAbastecimentoController in '..\src\controller\uAbastecimentoController.pas',
+  uFrmTanques in '..\src\view\uFrmTanques.pas' {frmTanques},
+  uFuncoes in '..\src\controller\uFuncoes.pas',
+  uFrmBombas in '..\src\view\uFrmBombas.pas' {frmBombas},
+  uFrmAbastecimentos in '..\src\view\uFrmAbastecimentos.pas' {FrmAbastecimentos},
+  uFrmRelatório in '..\src\view\uFrmRelatório.pas' {Form1};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TdmData, dmData);
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.

@@ -1,0 +1,27 @@
+unit uFuncoes;
+
+interface
+
+uses SqlExpr, uDmData;
+
+function GenID(Generator : string) : integer;
+
+implementation
+
+function GenID(Generator : string) : integer;
+  var
+    qry : TSQLQuery;
+begin
+  try
+    qry                     :=  TSQLQuery.Create(nil);
+    qry.SQLConnection       :=  dmData.dbConn;
+
+    qry.SQL.Add('Select gen_id('+ Generator +', 1) as ID From RDB$DATABASE');
+    qry.Open;
+  finally
+    Result                  :=  qry.FieldByName('ID').AsInteger;
+    qry.Destroy;
+  end;
+end;
+
+end.

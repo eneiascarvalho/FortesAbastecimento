@@ -1,0 +1,131 @@
+unit uAbastecimentoController;
+
+interface
+
+uses SqlExpr, SysUtils, uAbastecimentoModel;
+
+type
+  TAbastecimentoController = class
+    private
+      FDataSet  : TSQLQuery;
+    public
+      procedure Insert(AbastecimentoModel : TAbastecimentoModel);
+      procedure Delete(AbastecimentoModel : TAbastecimentoModel);
+      procedure Select(AbastecimentoModel : TAbastecimentoModel);
+      procedure Update(AbastecimentoModel : TAbastecimentoModel);
+
+      Constructor Create(Conn : TSQLConnection);
+      Destructor Destroy; override;
+  end;
+
+implementation
+
+{ TAbastecimentoController }
+
+constructor TAbastecimentoController.Create(Conn: TSQLConnection);
+begin
+  FDataSet                  :=  TSQLQuery.Create(nil);
+  FDataSet.SQLConnection    :=  Conn;
+end;
+
+procedure TAbastecimentoController.Delete(
+  AbastecimentoModel: TAbastecimentoModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Delete From abastecimentos');
+  FDataSet.SQL.Add('Where Id = :Id');
+  FDataSet.Params[0].Value  :=  AbastecimentoModel.ID;
+  FDataSet.ExecSQL;
+
+  AbastecimentoModel.ID               :=  0;
+  AbastecimentoModel.DATA             :=  Date;
+  AbastecimentoModel.ID_BOMBA         :=  0;
+  AbastecimentoModel.LITROS           :=  0;
+  AbastecimentoModel.VLR_ABASTECE     :=  0;
+  AbastecimentoModel.VLR_IMPOSTO      :=  0;
+end;
+
+destructor TAbastecimentoController.Destroy;
+begin
+  FDataSet.Destroy;
+  inherited;
+end;
+
+procedure TAbastecimentoController.Insert(
+  AbastecimentoModel: TAbastecimentoModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Insert Into bombas(');
+  FDataSet.SQL.Add('  Id,');
+  FDataSet.SQL.Add('  Data');
+  FDataSet.SQL.Add('  Id_Bomba,');
+  FDataSet.SQL.Add('  Litros,');
+  FDataSet.SQL.Add('  Valor_Abastecimento,');
+  FDataSet.SQL.Add('  Valor_Impostos');
+  FDataSet.SQL.Add(')Values(');
+  FDataSet.SQL.Add('  :Id,');
+  FDataSet.SQL.Add('  :Data');
+  FDataSet.SQL.Add('  :Id_Bomba,');
+  FDataSet.SQL.Add('  :Litros,');
+  FDataSet.SQL.Add('  :Valor_Abastecimento,');
+  FDataSet.SQL.Add('  :Valor_Impostos');
+
+  AbastecimentoModel.ID     :=  0;
+
+  AbastecimentoModel.VLR_IMPOSTO  :=
+    AbastecimentoModel.VLR_ABASTECE * (13/100);
+
+  FDataSet.Params[0].Value  :=  AbastecimentoModel.ID;
+  FDataSet.Params[1].Value  :=  AbastecimentoModel.DATA;
+  FDataSet.Params[2].Value  :=  AbastecimentoModel.ID_BOMBA;
+  FDataSet.Params[3].Value  :=  AbastecimentoModel.LITROS;
+  FDataSet.Params[4].Value  :=  AbastecimentoModel.VLR_ABASTECE;
+  FDataSet.Params[5].Value  :=  AbastecimentoModel.VLR_IMPOSTO;
+
+  FDataSet.ExecSQL;
+end;
+
+procedure TAbastecimentoController.Select(AbastecimentoModel : TAbastecimentoModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Select ID_BOMBA,LITROS,VALOR_ABASTECIMENTO,VALOR_IMPOSTOS From abastecimentos');
+  FDataSet.SQL.Add('Where Id = :Id');
+  FDataSet.Params[0].Value  :=  AbastecimentoModel.Id;
+  FDataSet.Open;
+
+  AbastecimentoModel.ID_BOMBA           :=  FDataSet.FieldByName('ID_BOMBA').AsInteger;
+  AbastecimentoModel.LITROS             :=  FDataSet.FieldByName('LITROS').AsFloat;
+  AbastecimentoModel.VLR_ABASTECE       :=  FDataSet.FieldByName('VLR_ABASTECE').AsFloat;
+  AbastecimentoModel.VLR_IMPOSTO        :=  FDataSet.FieldByName('VLR_IMPOSTO').AsFloat;
+end;
+
+procedure TAbastecimentoController.Update(
+  AbastecimentoModel: TAbastecimentoModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Update bombas Set');
+  FDataSet.SQL.Add('  Data = :Data,');
+  FDataSet.SQL.Add('  Id_Bomba = :Id_Bomba,');
+  FDataSet.SQL.Add('  Litros = :Litros,');
+  FDataSet.SQL.Add('  Valor_Abastecimento = :Valor_Abastecimento,');
+  FDataSet.SQL.Add('  Valor_Impostos = :Valor_Impostos');
+  FDataSet.SQL.Add('Where id = :Id');
+
+  AbastecimentoModel.VLR_IMPOSTO  :=
+    AbastecimentoModel.VLR_ABASTECE * (13/100);
+
+  FDataSet.Params[0].Value  :=  AbastecimentoModel.DATA;
+  FDataSet.Params[1].Value  :=  AbastecimentoModel.ID_BOMBA;
+  FDataSet.Params[2].Value  :=  AbastecimentoModel.LITROS;
+  FDataSet.Params[3].Value  :=  AbastecimentoModel.VLR_ABASTECE;
+  FDataSet.Params[4].Value  :=  AbastecimentoModel.VLR_IMPOSTO;
+  FDataSet.Params[5].Value  :=  AbastecimentoModel.ID;
+
+  FDataSet.ExecSQL;
+end;
+
+end.

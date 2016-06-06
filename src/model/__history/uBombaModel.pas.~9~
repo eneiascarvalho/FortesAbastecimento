@@ -1,0 +1,47 @@
+unit uBombaModel;
+
+interface
+
+type
+  TBomba = class
+  private
+    FDESCRICAO  : string;
+    FID         : integer;
+    FID_TANQUE  : integer;
+    procedure SetDESCRICAO(const Value: string);
+    procedure SetID(const Value: integer);
+    procedure SetID_TANQUE(const Value: integer);
+  published
+    public
+      property  ID          : integer read  FID           write SetID;
+      property  DESCRICAO   : string  read  FDESCRICAO    write SetDESCRICAO;
+      property  ID_TANQUE   : integer read  FID_TANQUE    write SetID_TANQUE;
+
+      Constructor Create;
+  end;
+
+implementation
+
+{ TBomba }
+
+constructor TBomba.Create;
+begin
+
+end;
+
+procedure TBomba.SetDESCRICAO(const Value: string);
+begin
+  FDESCRICAO := Value;
+end;
+
+procedure TBomba.SetID(const Value: integer);
+begin
+  FID := Value;
+end;
+
+procedure TBomba.SetID_TANQUE(const Value: integer);
+begin
+  FID_TANQUE := Value;
+end;
+
+end.

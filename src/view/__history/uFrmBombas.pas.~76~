@@ -1,0 +1,205 @@
+unit uFrmBombas;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uFrmBase, DB, Grids, DBGrids, StdCtrls, ExtCtrls, uBombaController,
+  uBombaModel, uDmData, uFrmTanques;
+
+type
+  TfrmBombas = class(TfrmBase)
+    Label1: TLabel;
+    edId: TEdit;
+    Label2: TLabel;
+    edDescricao: TEdit;
+    Label3: TLabel;
+    edTanque: TEdit;
+    btLocalizar: TButton;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btIncluirClick(Sender: TObject);
+    procedure dsDadosDataChange(Sender: TObject; Field: TField);
+    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btLocalizarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    procedure Manutencao(Habilita : boolean = False); override;
+    function  ValidaDados : boolean; override;
+    procedure Limpa;    override;
+    procedure Incluir;  override;
+    procedure Editar;   override;
+    procedure Excluir;  override;
+    procedure Gravar;   override;
+    procedure Cancelar; override;
+    procedure CarregaDados; override;
+  end;
+
+var
+  frmBombas: TfrmBombas;
+  bm        : TBombaModel;
+  bc        : TBombaController;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmBombas.btIncluirClick(Sender: TObject);
+begin
+  inherited;
+
+  bm.ClearClass;
+  edDescricao.SetFocus;
+end;
+
+procedure TfrmBombas.btLocalizarClick(Sender: TObject);
+  var
+    formTanque : TfrmTanques;
+begin
+  inherited;
+
+  try
+    formTanque              :=  TfrmTanques.Create(nil);
+    formTanque.FormStyle    :=  fsNormal;
+    formTanque.Visible      :=  False;
+    formTanque.pnlBotoes.Visible  :=  False;
+    formTanque.ShowModal;
+  finally
+    if (formTanque.ModalResult = mrOk) then
+    begin
+      edTanque.Text         :=  formTanque.dsDados.DataSet.FieldByName('Descricao').AsString;
+      edTanque.Tag          :=  formTanque.dsDados.DataSet.FieldByName('Id').AsInteger;
+    end;
+
+    formTanque.Release;
+    formTanque              :=  nil;
+  end;
+end;
+
+procedure TfrmBombas.Cancelar;
+begin
+  inherited;
+
+  Manutencao(False);
+  Limpa;
+  bm.ClearClass;
+  bm.ID           :=  dsDados.DataSet.FieldByName('ID').AsInteger;
+  bm.DESCRICAO    :=  dsDados.DataSet.FieldByName('DESCRICAO').AsString;
+  bc.Select(bm);
+
+  if bm.ID > 0 then
+    CarregaDados;
+end;
+
+procedure TfrmBombas.CarregaDados;
+begin
+  inherited;
+
+  edId.Text                 :=  IntToStr(bm.ID);
+  edDescricao.Text          :=  bm.DESCRICAO;
+  edTanque.Text             :=  dsDados.DataSet.FieldByName('Tanque').AsString;
+  edTanque.Tag              :=  bm.ID_TANQUE;
+end;
+
+procedure TfrmBombas.dsDadosDataChange(Sender: TObject; Field: TField);
+begin
+  inherited;
+
+  Limpa;
+
+  if
+    (dsDados.DataSet.Active) and
+    (dsDados.DataSet.RecordCount > 0)
+  then
+  begin
+    bm.ID           :=  dsDados.DataSet.FieldByName('ID').AsInteger;
+    bm.DESCRICAO    :=  dsDados.DataSet.FieldByName('DESCRICAO').AsString;
+    bc.Select(bm);
+    CarregaDados;
+  end;
+end;
+
+procedure TfrmBombas.Editar;
+begin
+  inherited;
+
+  edDescricao.SetFocus;
+end;
+
+procedure TfrmBombas.Excluir;
+begin
+  inherited;
+
+  bc.Delete(bm);
+  dsDados.DataSet.Refresh;
+end;
+
+procedure TfrmBombas.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  inherited;
+
+  Action  :=  caFree;
+  frmBombas       :=  nil;
+end;
+
+procedure TfrmBombas.FormCreate(Sender: TObject);
+begin
+  inherited;
+
+  bm              :=  TBombaModel.Create;
+  bc              :=  TBombaController.Create(dmData.dbConn);
+end;
+
+procedure TfrmBombas.FormShow(Sender: TObject);
+begin
+  inherited;
+
+  dmData.cdsBombas.Close;
+  dmData.cdsBombas.Open;
+end;
+
+procedure TfrmBombas.Gravar;
+begin
+  bm.DESCRICAO              :=  edDescricao.Text;
+  bm.ID_TANQUE              :=  edTanque.Tag;
+
+  if bm.ID = 0 then
+    bc.Insert(bm)
+  else
+    bc.Update(bm);
+
+  dsDados.DataSet.Refresh;
+
+  inherited;
+end;
+
+procedure TfrmBombas.Incluir;
+begin
+  inherited;
+
+end;
+
+procedure TfrmBombas.Limpa;
+begin
+  inherited;
+
+  edId.Text                 :=  '';
+  edDescricao.Text          :=  '';
+  edTanque.Text             :=  '';
+  edTanque.Tag              :=  0;
+end;
+
+procedure TfrmBombas.Manutencao(Habilita: boolean);
+begin
+  inherited;
+
+end;
+
+function TfrmBombas.ValidaDados: boolean;
+begin
+  Result          :=
+    (Trim(edDescricao.Text) <> '') and (edTanque.Tag > 0);
+end;
+
+end.

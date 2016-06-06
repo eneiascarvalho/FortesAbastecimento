@@ -1,0 +1,39 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = 'Abastece Fortes - Posto ABC'
+  ClientHeight = 314
+  ClientWidth = 578
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Menu = mnuPrincipal
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object mnuPrincipal: TMainMenu
+    Left = 208
+    Top = 120
+    object Cadastros1: TMenuItem
+      Caption = 'Cadastros'
+      object anques1: TMenuItem
+        Caption = 'Tanques'
+      end
+      object Bombas1: TMenuItem
+        Caption = 'Bombas'
+      end
+    end
+    object Abastecimentos1: TMenuItem
+      Caption = 'Abastecimentos'
+    end
+    object Relatrios1: TMenuItem
+      Caption = 'Relat'#243'rios'
+    end
+    object Sair1: TMenuItem
+      Caption = 'Sair'
+    end
+  end
+end

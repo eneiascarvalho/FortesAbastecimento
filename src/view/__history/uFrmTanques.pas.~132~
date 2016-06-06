@@ -1,0 +1,185 @@
+unit uFrmTanques;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uFrmBase, DB, Grids, DBGrids, StdCtrls, ExtCtrls, uTanqueController,
+  uTanqueModel, uDmData;
+
+type
+  TfrmTanques = class(TfrmBase)
+    Label1: TLabel;
+    edId: TEdit;
+    edDescricao: TEdit;
+    Label2: TLabel;
+    rgCombustivel: TRadioGroup;
+    procedure btIncluirClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure dsDadosDataChange(Sender: TObject; Field: TField);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure gridDadosDblClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    procedure Manutencao(Habilita : boolean = False); override;
+    function  ValidaDados : boolean; override;
+    procedure Limpa;    override;
+    procedure Incluir;  override;
+    procedure Editar;   override;
+    procedure Excluir;  override;
+    procedure Gravar;   override;
+    procedure Cancelar; override;
+    procedure CarregaDados; override;
+  end;
+
+var
+  frmTanques: TfrmTanques;
+  tm        : TTanqueModel;
+  tc        : TTanqueController;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfrmTanques.btIncluirClick(Sender: TObject);
+begin
+  inherited;
+
+  tm.ClearClass;
+  edDescricao.SetFocus;
+end;
+
+procedure TfrmTanques.Cancelar;
+begin
+  inherited;
+
+  Manutencao(False);
+  Limpa;
+  tm.ClearClass;
+  tm.ID           :=  dsDados.DataSet.FieldByName('ID').AsInteger;
+  tm.DESCRICAO    :=  dsDados.DataSet.FieldByName('DESCRICAO').AsString;
+  tc.Select(tm);
+
+  if tm.ID > 0 then
+    CarregaDados;
+end;
+
+procedure TfrmTanques.CarregaDados;
+begin
+  inherited;
+
+  edId.Text                 :=  IntToStr(tm.ID);
+  edDescricao.Text          :=  tm.DESCRICAO;
+  rgCombustivel.ItemIndex   :=  (tm.COMBUSTIVEL - 1);
+end;
+
+procedure TfrmTanques.dsDadosDataChange(Sender: TObject; Field: TField);
+begin
+  inherited;
+
+  Limpa;
+
+  if
+    (dsDados.DataSet.Active) and
+    (dsDados.DataSet.RecordCount > 0)
+  then
+  begin
+    tm.ID           :=  dsDados.DataSet.FieldByName('ID').AsInteger;
+    tm.DESCRICAO    :=  dsDados.DataSet.FieldByName('DESCRICAO').AsString;
+    tc.Select(tm);
+    CarregaDados;
+  end;
+end;
+
+procedure TfrmTanques.Editar;
+begin
+  inherited;
+  edDescricao.SetFocus;
+end;
+
+procedure TfrmTanques.Excluir;
+begin
+  inherited;
+
+  tc.Delete(tm);
+
+  dsDados.DataSet.Refresh;
+end;
+
+procedure TfrmTanques.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action          :=  caFree;
+  frmTanques      :=  nil;
+end;
+
+procedure TfrmTanques.FormCreate(Sender: TObject);
+begin
+  inherited;
+
+  tm              :=  TTanqueModel.Create;
+  tc              :=  TTanqueController.Create(dmData.dbConn);
+end;
+
+procedure TfrmTanques.FormShow(Sender: TObject);
+begin
+  inherited;
+
+  dmData.cdsTanques.Close;
+  dmData.cdsTanques.Open;
+end;
+
+procedure TfrmTanques.Gravar;
+begin
+  tm.DESCRICAO              :=  edDescricao.Text;
+  tm.COMBUSTIVEL            :=  rgCombustivel.ItemIndex + 1;
+
+  if tm.ID = 0 then
+    tc.Insert(tm)
+  else
+    tc.Update(tm);
+
+  dsDados.DataSet.Refresh;
+
+  inherited;
+end;
+
+procedure TfrmTanques.gridDadosDblClick(Sender: TObject);
+begin
+  inherited;
+
+  if
+  not(pnlBotoes.Visible)
+then
+  
+end;
+
+procedure TfrmTanques.Incluir;
+begin
+  inherited;
+
+end;
+
+procedure TfrmTanques.Limpa;
+begin
+  inherited;
+
+  edId.Text                 :=  '';
+  edDescricao.Text          :=  '';
+  rgCombustivel.ItemIndex   :=  -1;
+end;
+
+procedure TfrmTanques.Manutencao(Habilita: boolean);
+begin
+  inherited;
+
+end;
+
+function TfrmTanques.ValidaDados: boolean;
+begin
+  Result          :=
+    (Trim(edDescricao.Text) <> '') and (rgCombustivel.ItemIndex > -1);
+end;
+
+end.

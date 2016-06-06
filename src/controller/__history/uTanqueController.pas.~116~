@@ -1,0 +1,129 @@
+unit uTanqueController;
+
+interface
+
+uses SqlExpr, DB, SysUtils, uFuncoes, uTanqueModel;
+
+type
+  TTanqueController = class
+    private
+      FDataSet  : TSQLQuery;
+    public
+      procedure Insert(TanqueModel : TTanqueModel);
+      procedure Update(TanqueModel : TTanqueModel);
+      procedure Delete(TanqueModel : TTanqueModel);
+      procedure Select(TanqueModel : TTanqueModel);
+
+      Constructor Create(Conn : TSQLConnection);
+      Destructor Destroy; override;
+  end;
+
+implementation
+
+{ TTanqueController }
+
+constructor TTanqueController.Create(Conn : TSQLConnection);
+begin
+  FDataSet                  :=  TSQLQuery.Create(nil);
+  FDataSet.SQLConnection    :=  Conn;
+end;
+
+procedure TTanqueController.Delete(TanqueModel: TTanqueModel);
+  function PodeDeletar : boolean;
+  begin
+    Result                  :=  True;
+
+    FDataSet.Close;
+    FDataSet.SQL.Clear;
+    FDataSet.SQL.Add('Select                    ');
+    FDataSet.SQL.Add('        Count(*) as Qtd   ');
+    FDataSet.SQL.Add('From                      ');
+    FDataSet.SQL.Add('    abastecimentos a      ');
+    FDataSet.SQL.Add('Inner Join                ');
+    FDataSet.SQL.Add('    bombas b              ');
+    FDataSet.SQL.Add('On                        ');
+    FDataSet.SQL.Add('    a.id_bomba = b.id     ');
+    FDataSet.SQL.Add('Inner Join                ');
+    FDataSet.SQL.Add('    tanques t             ');
+    FDataSet.SQL.Add('On                        ');
+    FDataSet.SQL.Add('    b.id_tanque = t.id    ');
+    FDataSet.SQL.Add('Where                     ');
+    FDataSet.SQL.Add('    t.id = :id            ');
+    FDataSet.Params[0].Value:=  TanqueModel.ID;
+    FDataSet.Open;
+
+    Result                  :=  not(FDataSet.FieldByName('Qtd').AsInteger > 0);
+  end;
+begin
+  if not(PodeDeletar) then
+    raise Exception.Create('Existe movimentação para este tanque!')
+  else
+  begin
+    FDataSet.Close;
+    FDataSet.SQL.Clear;
+    FDataSet.SQL.Add('Delete From tanques');
+    FDataSet.SQL.Add('Where Id = :Id');
+    FDataSet.Params[0].Value  :=  TanqueModel.ID;
+    FDataSet.ExecSQL;
+
+    TanqueModel.ClearClass;
+  end;
+end;
+
+destructor TTanqueController.Destroy;
+begin
+  FDataSet.Destroy;
+  inherited;
+end;
+
+procedure TTanqueController.Insert(TanqueModel: TTanqueModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Insert Into tanques(');
+  FDataSet.SQL.Add('  Id,');
+  FDataSet.SQL.Add('  Descricao,');
+  FDataSet.SQL.Add('  Combustivel');
+  FDataSet.SQL.Add(')Values(');
+  FDataSet.SQL.Add('  :Id,');
+  FDataSet.SQL.Add('  :Descricao,');
+  FDataSet.SQL.Add('  :Combustivel)');
+
+  TanqueModel.ID            :=  GenID('GEN_ID_TANQUES');
+  FDataSet.Params[0].Value  :=  TanqueModel.ID;
+  FDataSet.Params[1].Value  :=  TanqueModel.DESCRICAO;
+  FDataSet.Params[2].Value  :=  TanqueModel.COMBUSTIVEL;
+
+  FDataSet.ExecSQL;
+end;
+
+procedure TTanqueController.Select(TanqueModel : TTanqueModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Select COMBUSTIVEL From tanques');
+  FDataSet.SQL.Add('Where Id = :Id');
+  FDataSet.Params[0].Value  :=  TanqueModel.ID;
+  FDataSet.Open;
+
+//  Result.ID                 :=  FDataSet.FieldByName('ID').AsInteger;
+//  TanqueModel.DESCRICAO          :=  FDataSet.FieldByName('DESCRICAO').AsString;
+  TanqueModel.COMBUSTIVEL        :=  FDataSet.FieldByName('COMBUSTIVEL').AsInteger;
+end;
+
+procedure TTanqueController.Update(TanqueModel: TTanqueModel);
+begin
+  FDataSet.Close;
+  FDataSet.SQL.Clear;
+  FDataSet.SQL.Add('Update tanques Set');
+  FDataSet.SQL.Add('  Descricao = :Descricao');
+  FDataSet.SQL.Add('Where');
+  FDataSet.SQL.Add('  Id = :Id');
+
+  FDataSet.Params[0].Value  :=  TanqueModel.DESCRICAO;
+  FDataSet.Params[1].Value  :=  TanqueModel.ID;
+
+  FDataSet.ExecSQL;
+end;
+
+end.

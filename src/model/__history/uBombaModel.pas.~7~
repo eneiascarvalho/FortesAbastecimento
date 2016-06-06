@@ -1,0 +1,13 @@
+unit uBombaModel;
+
+interface
+
+type
+  TBomba = class
+    public
+      property
+  end;
+
+implementation
+
+end.

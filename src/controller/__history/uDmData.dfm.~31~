@@ -1,0 +1,103 @@
+object dmData: TdmData
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 291
+  Width = 353
+  object qryTanques: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'Select Id,Descricao From Tanques')
+    SQLConnection = dbConn
+    Left = 32
+    Top = 168
+  end
+  object dspTanques: TDataSetProvider
+    DataSet = qryTanques
+    Left = 32
+    Top = 120
+  end
+  object cdsTanques: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspTanques'
+    Left = 32
+    Top = 72
+  end
+  object dbConn: TSQLConnection
+    DriverName = 'Firebird'
+    LoginPrompt = False
+    Params.Strings = (
+      'DriverUnit=Data.DBXFirebird'
+      
+        'DriverPackageLoader=TDBXDynalinkDriverLoader,DBXFirebirdDriver20' +
+        '0.bpl'
+      
+        'DriverAssemblyLoader=Borland.Data.TDBXDynalinkDriverLoader,Borla' +
+        'nd.Data.DbxCommonDriver,Version=20.0.0.0,Culture=neutral,PublicK' +
+        'eyToken=91d62ebb5b0d1b1b'
+      
+        'MetaDataPackageLoader=TDBXFirebirdMetaDataCommandFactory,DbxFire' +
+        'birdDriver200.bpl'
+      
+        'MetaDataAssemblyLoader=Borland.Data.TDBXFirebirdMetaDataCommandF' +
+        'actory,Borland.Data.DbxFirebirdDriver,Version=20.0.0.0,Culture=n' +
+        'eutral,PublicKeyToken=91d62ebb5b0d1b1b'
+      'LibraryNameOsx=libsqlfb.dylib'
+      
+        'VendorLib=C:\Program Files (x86)\Firebird\Firebird_2_5\bin\fbcli' +
+        'ent.dll'
+      
+        'VendorLibWin64=C:\Program Files (x86)\Firebird\Firebird_2_5\bin\' +
+        'fbclient.dll'
+      'VendorLibOsx=/Library/Frameworks/Firebird.framework/Firebird'
+      'Database=C:\CNODB\dbFortes\DATA.FDB')
+    BeforeConnect = dbConnBeforeConnect
+    Left = 32
+    Top = 24
+  end
+  object qryBombas: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'Select b.Id, b.Descricao, t.Descricao as Tanque From'
+      'bombas b Inner Join tanques t On b.Id_Tanque = t.Id')
+    SQLConnection = dbConn
+    Left = 120
+    Top = 168
+  end
+  object dspBombas: TDataSetProvider
+    DataSet = qryBombas
+    Left = 120
+    Top = 120
+  end
+  object cdsBombas: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspBombas'
+    Left = 120
+    Top = 72
+  end
+  object qryAbastecimentos: TSQLQuery
+    MaxBlobSize = -1
+    Params = <>
+    SQL.Strings = (
+      'Select b.Id, b.Descricao, t.Descricao as Tanque From'
+      'bombas b Inner Join tanques t On b.Id_Tanque = t.Id')
+    SQLConnection = dbConn
+    Left = 216
+    Top = 168
+  end
+  object dspAbastecimentos: TDataSetProvider
+    DataSet = qryAbastecimentos
+    Left = 216
+    Top = 120
+  end
+  object ClientDataSet1: TClientDataSet
+    Aggregates = <>
+    Params = <>
+    ProviderName = 'dspBombas'
+    Left = 216
+    Top = 72
+  end
+end

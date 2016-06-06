@@ -1,0 +1,131 @@
+object frmBase: TfrmBase
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'frmBase'
+  ClientHeight = 304
+  ClientWidth = 566
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Visible = True
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 263
+    Width = 566
+    Height = 41
+    Align = alBottom
+    TabOrder = 0
+    object btCancelar: TButton
+      AlignWithMargins = True
+      Left = 348
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alLeft
+      Caption = 'Cancelar'
+      TabOrder = 4
+      OnClick = btCancelarClick
+    end
+    object btExcluir: TButton
+      AlignWithMargins = True
+      Left = 176
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alLeft
+      Caption = 'Excluir'
+      TabOrder = 2
+      OnClick = btExcluirClick
+    end
+    object btEditar: TButton
+      AlignWithMargins = True
+      Left = 90
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alLeft
+      Caption = 'Editar'
+      TabOrder = 1
+      OnClick = btEditarClick
+    end
+    object btIncluir: TButton
+      AlignWithMargins = True
+      Left = 4
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alLeft
+      Caption = 'Incluir'
+      TabOrder = 0
+      OnClick = btIncluirClick
+    end
+    object btGravar: TButton
+      AlignWithMargins = True
+      Left = 262
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alLeft
+      Caption = 'Gravar'
+      TabOrder = 3
+      OnClick = btGravarClick
+    end
+    object btSair: TButton
+      AlignWithMargins = True
+      Left = 482
+      Top = 4
+      Width = 80
+      Height = 33
+      Align = alRight
+      Caption = 'Sair'
+      TabOrder = 5
+      OnClick = btSairClick
+    end
+  end
+  object pnlDados: TPanel
+    Left = 289
+    Top = 0
+    Width = 277
+    Height = 263
+    Align = alClient
+    TabOrder = 1
+  end
+  object pnlGrid: TPanel
+    Left = 0
+    Top = 0
+    Width = 289
+    Height = 263
+    Align = alLeft
+    TabOrder = 2
+    object gridDados: TDBGrid
+      Left = 1
+      Top = 1
+      Width = 287
+      Height = 261
+      Align = alClient
+      DataSource = dsDados
+      ReadOnly = True
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+    end
+  end
+  object dsDados: TDataSource
+    Left = 232
+    Top = 128
+  end
+end
